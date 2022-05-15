@@ -1,5 +1,5 @@
 error: delimiter is not contained in the input string
- --> tests/ui/missing.rs:2:54
+ --> tests/ui/missing.rs:2:50
   |
-2 |     let _ = const_split_str::split_str!("head-tail", "?");
-  |                                                      ^^^
+2 |     let _ = const_split_str::split!("head-tail", "?");
+  |                                                  ^^^

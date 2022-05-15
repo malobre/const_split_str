@@ -3,7 +3,7 @@
 //! # Syntax
 //!
 //! ```ignore
-//! split_str!(INPUT, DELIMITER);
+//! split!(INPUT, DELIMITER);
 //! ```
 //!
 //! Where both `INPUT` and `DELIMITER` are `&'static str`.
@@ -15,7 +15,7 @@
 //! # Example
 //!
 //! ```rust
-//! let [head, tail] = const_split_str::split_str!("head-tail", "-");
+//! let [head, tail] = const_split_str::split!("head-tail", "-");
 //!
 //! assert_eq!(head, "head");
 //! assert_eq!(tail, "tail");
@@ -41,7 +41,7 @@ impl Parse for SplitStrInput {
 }
 
 #[proc_macro]
-pub fn split_str(input: TokenStream) -> TokenStream {
+pub fn split(input: TokenStream) -> TokenStream {
     let SplitStrInput { string, delimiter } = parse_macro_input!(input as SplitStrInput);
 
     let string_value = string.value();
