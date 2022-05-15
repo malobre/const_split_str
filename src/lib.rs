@@ -1,25 +1,6 @@
-//! Split a `&'static str` at compile time.
+//! # 🦀 `const_split_str`
 //!
-//! # Syntax
-//!
-//! ```ignore
-//! split!(INPUT, DELIMITER);
-//! ```
-//!
-//! Where both `INPUT` and `DELIMITER` are `&'static str`.
-//!
-//! # Semantics
-//!
-//! For a given input and delimiter, the macro split the input and returns an array of `&'static str`.
-//!
-//! # Example
-//!
-//! ```rust
-//! let [head, tail] = const_split_str::split!("head-tail", "-");
-//!
-//! assert_eq!(head, "head");
-//! assert_eq!(tail, "tail");
-//! ```
+//! _Macros to split `&'static str` at compile time._
 
 use proc_macro::TokenStream;
 use quote::{quote, quote_spanned};
@@ -40,6 +21,28 @@ impl Parse for SplitStrInput {
     }
 }
 
+/// Split a `&'static str` at compile time.
+///
+/// # Syntax
+///
+/// ```ignore
+/// split_str!(INPUT, DELIMITER);
+/// ```
+///
+/// Where both `INPUT` and `DELIMITER` are `&'static str`.
+///
+/// # Semantics
+///
+/// For a given input and delimiter, the macro split the input and returns an array of `&'static str`.
+///
+/// # Example
+///
+/// ```rust
+/// let [head, tail] = const_split_str::split!("head-tail", "-");
+///
+/// assert_eq!(head, "head");
+/// assert_eq!(tail, "tail");
+/// ```
 #[proc_macro]
 pub fn split(input: TokenStream) -> TokenStream {
     let SplitStrInput { string, delimiter } = parse_macro_input!(input as SplitStrInput);
@@ -56,6 +59,46 @@ pub fn split(input: TokenStream) -> TokenStream {
 
         quote! {
             [#(#substrings),*]
+        }
+    };
+
+    TokenStream::from(expanded)
+}
+
+/// Like [`str::split_once`], but at compile time.
+///
+/// # Syntax
+///
+/// ```ignore
+/// split_once!(INPUT, DELIMITER);
+/// ```
+///
+/// Where both `INPUT` and `DELIMITER` are `&'static str`.
+///
+/// # Semantics
+///
+/// For a given input and delimiter, the macro split the input at the first occurence of the
+/// delimiter and returns a `(&'static str, &'static str)`.
+///
+/// # Example
+///
+/// ```rust
+/// let (head, tail) = const_split_str::split_once!("head-tail", "-");
+///
+/// assert_eq!(head, "head");
+/// assert_eq!(tail, "tail");
+/// ```
+#[proc_macro]
+pub fn split_once(input: TokenStream) -> TokenStream {
+    let SplitStrInput { string, delimiter } = parse_macro_input!(input as SplitStrInput);
+
+    let expanded = if let Some((head, tail)) = string.value().split_once(&delimiter.value()) {
+        quote! {
+            (#head, #tail)
+        }
+    } else {
+        quote_spanned! { delimiter.span() =>
+            compile_error!("delimiter is not contained in the input string")
         }
     };
 

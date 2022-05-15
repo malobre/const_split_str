@@ -1,0 +1,5 @@
+error: delimiter is not contained in the input string
+ --> tests/ui/missing_once.rs:2:55
+  |
+2 |     let _ = const_split_str::split_once!("head-tail", "?");
+  |                                                       ^^^
