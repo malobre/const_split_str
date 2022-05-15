@@ -50,15 +50,15 @@ pub fn split(input: TokenStream) -> TokenStream {
     let string_value = string.value();
     let delimiter_value = delimiter.value();
 
-    let expanded = if !string_value.contains(&delimiter_value) {
-        quote_spanned! { delimiter.span() =>
-            compile_error!("delimiter is not contained in the input string")
-        }
-    } else {
+    let expanded = if string_value.contains(&delimiter_value) {
         let substrings = string_value.split(&delimiter_value);
 
         quote! {
             [#(#substrings),*]
+        }
+    } else {
+        quote_spanned! { delimiter.span() =>
+            compile_error!("delimiter is not contained in the input string")
         }
     };
 
